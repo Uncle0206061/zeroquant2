@@ -1,0 +1,28 @@
+# ZeroQuant 2.0 Backend 配置
+server_port: "8080"
+mode: "debug"
+
+# 日志配置
+log_level: "info"
+log_path: "./logs/app.log"
+
+# 数据库配置
+db_host: "localhost"
+db_port: "5432"
+db_user: "postgres"
+db_password: "zq215007"
+db_name: "biz"
+db_sslmode: "disable"
+
+# Redis 配置
+redis_host: "localhost"
+redis_port: "6379"
+redis_password: ""
+redis_db: 0
+
+# JWT 配置
+jwt_secret: "zq2_zeroquant_secret_2025_secure_key"
+jwt_expire: 168  # 7 天 * 24 小时
+
+# 数据服务配置（Python 数据服务）
+data_service_url: "http://localhost:8081"
