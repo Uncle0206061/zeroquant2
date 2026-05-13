@@ -253,14 +253,17 @@ func (s *OrderService) match(order *model.Order, portfolio *model.Portfolio) (in
 		order.StockName = quote.StockName
 	}
 
-	// 成交量取委托量和盘口量的最小值
-	filledQty := minInt(order.Quantity, minInt(quote.Ask1Qty, quote.Bid1Qty))
-	if order.Direction == DirectionSell {
-		filledQty = minInt(order.Quantity, minInt(quote.Bid1Qty, 0))
-		if filledQty <= 0 {
-			// 卖方撮合：若买一量为0，也认为无对手盘
-			return 0, 0, nil
-		}
+	// 撮合逻辑：买入→卖一价成交（取Ask1Qty），卖出→买一价成交（取Bid1Qty）
+	var filledQty int
+	if order.Direction == DirectionBuy {
+		filledQty = minInt(order.Quantity, quote.Ask1Qty)
+	} else {
+		filledQty = minInt(order.Quantity, quote.Bid1Qty)
+	}
+
+	if filledQty <= 0 {
+		// 无对手盘，无法成交
+		return 0, 0, nil
 	}
 
 	if filledQty <= 0 {

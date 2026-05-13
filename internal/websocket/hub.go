@@ -22,41 +22,44 @@ const (
 	EventBacktestProgress = "backtest_progress"
 	EventBacktestResult   = "backtest_result"
 	EventStrategySignal   = "strategy_signal"
+	EventSystemAlert      = "system_alert" // 系统异常告警
 	EventError            = "error"
 )
 
 // 推送配置（技术规范强制）
 const (
-	HeartbeatInterval = 10 * time.Second // 心跳间隔
-	HeartbeatTimeout  = 10 * time.Second // 无响应超时
+	HeartbeatInterval = 10 * time.Second       // 心跳间隔
+	HeartbeatTimeout  = 10 * time.Second       // 无响应超时
 	PushDeadline      = 200 * time.Millisecond // 推送超时
-	MaxReconnect      = 10               // 最大重连次数（客户端视角）
-	ReconnectDelay    = 2 * time.Second  // 重连间隔
-	MessageBufferSize = 100              // 每个用户消息保留条数
+	MaxReconnect      = 10                      // 最大重连次数
+	ReconnectDelay    = 2 * time.Second         // 重连间隔
+	MessageBufferSize = 100                     // 每个用户消息保留条数
+	MaxConnections    = 100                     // 最大并发连接数
 )
 
 // WSMessage WebSocket 消息结构（统一格式）
 type WSMessage struct {
-	Type      string      `json:"type"`       // 事件类型
-	Payload   interface{} `json:"payload"`    // 数据内容
-	Timestamp int64       `json:"timestamp"`  // 毫秒时间戳
+	Type      string      `json:"type"`      // 事件类型
+	Payload   interface{} `json:"payload"`   // 数据内容
+	Timestamp int64       `json:"timestamp"` // 毫秒时间戳
 }
 
 // Client 代表一个 WebSocket 客户端连接
 type Client struct {
-	UserID    int64            // 用户ID
-	Conn      *websocket.Conn  // WebSocket 连接
-	Hub       *Hub             // 所属 Hub
-	Send      chan []byte       // 发送消息缓冲通道
-	ConnectedAt time.Time       // 连接时间
+	UserID      int64            // 用户ID
+	Role        string           // 用户角色（admin/user）
+	Conn        *websocket.Conn  // WebSocket 连接
+	Hub         *Hub             // 所属 Hub
+	Send        chan []byte      // 发送消息缓冲通道
+	ConnectedAt time.Time        // 连接时间
 }
 
 // Hub 管理所有 WebSocket 客户端连接
 type Hub struct {
-	mu       sync.RWMutex
-	clients  map[int64]*Client // userID → Client（同用户仅一个活跃连接）
-	register   chan *Client    // 注册新连接
-	unregister chan *Client    // 注销连接
+	mu         sync.RWMutex
+	clients    map[int64]*Client // userID → Client（同用户仅一个活跃连接）
+	register   chan *Client      // 注册新连接
+	unregister chan *Client      // 注销连接
 }
 
 // NewHub 创建新的 Hub 实例
@@ -74,6 +77,15 @@ func (h *Hub) Run() {
 		select {
 		case client := <-h.register:
 			h.mu.Lock()
+			// 连接数上限检查
+			if len(h.clients) >= MaxConnections {
+				h.mu.Unlock()
+				// 拒绝新连接
+				close(client.Send)
+				_ = client.Conn.Close()
+				logger.Warn("WS: rejected connection, max connections reached (%d)", MaxConnections)
+				continue
+			}
 			// 如果该用户已有连接，先踢掉旧连接
 			if old, ok := h.clients[client.UserID]; ok {
 				close(old.Send)
@@ -142,6 +154,29 @@ func (h *Hub) BroadcastToUser(userID int64, event string, payload interface{}) e
 	}
 }
 
+// BroadcastToAdmins 向所有管理员推送消息（告警专用）
+func (h *Hub) BroadcastToAdmins(event string, payload interface{}) {
+	msg := newMessage(event, payload)
+	data, err := json.Marshal(msg)
+	if err != nil {
+		logger.Error("WS: marshal admin broadcast failed: %v", err)
+		return
+	}
+
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+
+	for userID, client := range h.clients {
+		if client.Role == "admin" {
+			select {
+			case client.Send <- data:
+			case <-time.After(PushDeadline):
+				logger.Warn("WS: admin broadcast timeout for user %d", userID)
+			}
+		}
+	}
+}
+
 // Broadcast 向所有在线用户广播消息
 func (h *Hub) Broadcast(event string, payload interface{}) {
 	msg := newMessage(event, payload)
@@ -160,6 +195,25 @@ func (h *Hub) Broadcast(event string, payload interface{}) {
 		case <-time.After(PushDeadline):
 			logger.Warn("WS: broadcast timeout for user %d", userID)
 		}
+	}
+}
+
+// Stats 返回 WebSocket 统计信息
+func (h *Hub) Stats() map[string]interface{} {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+
+	adminCount := 0
+	for _, client := range h.clients {
+		if client.Role == "admin" {
+			adminCount++
+		}
+	}
+
+	return map[string]interface{}{
+		"total_connections": len(h.clients),
+		"admin_connections": adminCount,
+		"max_connections":   MaxConnections,
 	}
 }
 

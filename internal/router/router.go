@@ -15,19 +15,27 @@ import (
 
 // Setup 注册所有路由
 func Setup(cfg *config.Config, db *gorm.DB) *gin.Engine {
-	// 创建 Gin 引擎
-	r := gin.Default()
+	// 创建 Gin 引擎（release 模式下减少日志输出）
+	if cfg.Mode == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	r := gin.New() // 使用 gin.New() 替代 gin.Default()，手动注册中间件
 
-	// 注册中间件
-	r.Use(middleware.CORS())
-	r.Use(middleware.Logger())
-	r.Use(middleware.Recovery())
+	// ============ 全局中间件 ============
+	r.Use(middleware.RequestID())      // 1. 生成 request_id
+	r.Use(middleware.CORS())           // 2. 跨域
+	r.Use(middleware.StructuredLogger()) // 3. 结构化请求日志
+	r.Use(middleware.Recovery())       // 4. 错误恢复 + 告警推送
+	r.Use(middleware.RateLimit())      // 5. 限流（60次/分钟/IP）
 
-	// 健康检查路由（无需认证）
+	// ============ 健康检查路由（无需认证）============
 	r.GET("/api/v1/health", handler.HealthCheck)
 	r.GET("/api/v1/ping", handler.Ping)
 
-	// WebSocket 路由
+	// ============ 系统监控路由 ============
+	r.GET("/api/v1/stats", handler.StatsHandler)
+
+	// ============ WebSocket 路由 ============
 	r.GET("/api/v1/ws", websocket.HandleWS)
 
 	// WebSocket 推送回调（供 Python 数据服务调用，无需 JWT）

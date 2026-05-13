@@ -2,7 +2,7 @@
 server_port: "8080"
 mode: "debug"
 
-# 日志配置
+# 日志配置（结构化JSON格式）
 log_level: "info"
 log_path: "./logs/app.log"
 
@@ -13,6 +13,11 @@ db_user: "postgres"
 db_password: "zq215007"
 db_name: "biz"
 db_sslmode: "disable"
+
+# 数据库连接池
+db_max_idle_conns: 10
+db_max_open_conns: 30
+db_conn_max_life: 3600  # 秒
 
 # Redis 配置
 redis_host: "localhost"

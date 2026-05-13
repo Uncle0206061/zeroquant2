@@ -1,5 +1,5 @@
 // Package websocket 提供 WebSocket 实时通信功能
-// 预置配置：心跳间隔 10 秒 / 断开重连最多 10 次间隔 2 秒 / 推送延迟 ≤200ms
+// 预置配置：心跳间隔 10 秒 / 断开重连最多 10 次间隔 2 秒 / 推送延迟 ≤200ms / 最大连接100
 package websocket
 
 import (
@@ -29,7 +29,7 @@ var globalHub *Hub
 func InitHub() {
 	globalHub = NewHub()
 	go globalHub.Run()
-	logger.Info("WebSocket Hub initialized")
+	logger.Info("WebSocket Hub initialized, max_connections=%d", MaxConnections)
 }
 
 // GetHub 获取全局 Hub 实例
@@ -61,6 +61,7 @@ func HandleWS(c *gin.Context) {
 		return
 	}
 	userID := claims.UserID
+	role := claims.Role
 
 	// ============ 升级为 WebSocket ============
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -71,20 +72,21 @@ func HandleWS(c *gin.Context) {
 
 	// 创建客户端并注册到 Hub
 	client := &Client{
-		UserID:    userID,
-		Conn:      conn,
-		Hub:       globalHub,
-		Send:      make(chan []byte, 256),
+		UserID:      userID,
+		Role:        role,
+		Conn:        conn,
+		Hub:         globalHub,
+		Send:        make(chan []byte, 256),
 		ConnectedAt: time.Now(),
 	}
 
 	globalHub.Register(client)
-	logger.Info("WS: client connected, userID=%d, ip=%s", userID, c.ClientIP())
+	logger.Info("WS: client connected, userID=%d, role=%s, ip=%s", userID, role, c.ClientIP())
 
 	// 发送欢迎消息
 	_ = client.SendJSON(EventWelcome, gin.H{
-		"message":   "Connected to ZeroQuant 2.0",
-		"user_id":   userID,
+		"message":      "Connected to ZeroQuant 2.0",
+		"user_id":      userID,
 		"connected_at": client.ConnectedAt,
 	})
 
@@ -122,7 +124,7 @@ func PushBacktestProgress(userID int64, payload interface{}) {
 	globalHub.BroadcastToUser(userID, EventBacktestProgress, payload)
 }
 
-// PushBacktestResult 推送回测结果（供 service 层调用）
+// PushBacktestResult 推送回测结果
 func PushBacktestResult(userID int64, payload interface{}) {
 	if globalHub == nil {
 		return
@@ -130,10 +132,22 @@ func PushBacktestResult(userID int64, payload interface{}) {
 	globalHub.BroadcastToUser(userID, EventBacktestResult, payload)
 }
 
-// PushStrategySignal 推送策略信号（供 service 层调用）
+// PushStrategySignal 推送策略信号
 func PushStrategySignal(userID int64, payload interface{}) {
 	if globalHub == nil {
 		return
 	}
 	globalHub.BroadcastToUser(userID, EventStrategySignal, payload)
+}
+
+// PushSystemAlert 推送系统异常告警（给管理员）
+func PushSystemAlert(message string) {
+	if globalHub == nil {
+		return
+	}
+	globalHub.BroadcastToAdmins(EventSystemAlert, map[string]interface{}{
+		"level":   "error",
+		"message": message,
+		"time":    time.Now().Format(time.RFC3339),
+	})
 }
