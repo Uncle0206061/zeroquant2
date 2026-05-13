@@ -18,6 +18,11 @@ var startTime = time.Now()
 
 // HealthCheck 健康检查
 // GET /api/v1/health
+// @Summary 健康检查
+// @Tags 系统
+// @Produce json
+// @Success 200 {object} response.Response
+// @Router /health [get]
 func HealthCheck(c *gin.Context) {
 	response.Success(c, gin.H{
 		"status":    "ok",
@@ -29,6 +34,11 @@ func HealthCheck(c *gin.Context) {
 
 // Ping 心跳检查（简化版）
 // GET /api/v1/ping
+// @Summary 心跳检查
+// @Tags 系统
+// @Produce json
+// @Success 200 {object} response.Response
+// @Router /ping [get]
 func Ping(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code":    0,
@@ -39,6 +49,11 @@ func Ping(c *gin.Context) {
 // StatsHandler 系统监控指标
 // GET /api/v1/stats
 // 返回 CPU、内存、DB连接池、Redis连接、WebSocket连接数
+// @Summary 系统监控指标
+// @Tags 系统
+// @Produce json
+// @Success 200 {object} response.Response
+// @Router /stats [get]
 func StatsHandler(c *gin.Context) {
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)

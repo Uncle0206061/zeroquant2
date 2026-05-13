@@ -1,5 +1,14 @@
 // Package main is the entry point for ZeroQuant 2.0 backend server.
 // 核心功能：行情展示、自选股管理、模拟交易、实盘交易、简单回测
+//
+// @title ZeroQuant 2.0 Backend API
+// @version 1.0.0
+// @description A股全自动交易系统后端API - 用户注册登录、策略管理、模拟交易、实盘交易、WebSocket实时推送
+// @host localhost:8080
+// @BasePath /api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 package main
 
 import (

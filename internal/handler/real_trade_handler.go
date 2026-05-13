@@ -22,6 +22,12 @@ func NewRealTradeHandler(realOrderService *service.RealOrderService) *RealTradeH
 }
 
 // CreateRealAccount POST /api/v1/trade/real/account/create
+// @Summary 创建实盘账户
+// @Tags 实盘交易
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /trade/real/account/create [post]
 func (h *RealTradeHandler) CreateRealAccount(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -44,6 +50,12 @@ func (h *RealTradeHandler) CreateRealAccount(c *gin.Context) {
 }
 
 // GetRealAccount GET /api/v1/trade/real/account
+// @Summary 查询实盘账户
+// @Tags 实盘交易
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /trade/real/account [get]
 func (h *RealTradeHandler) GetRealAccount(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -61,6 +73,13 @@ func (h *RealTradeHandler) GetRealAccount(c *gin.Context) {
 }
 
 // SubmitRealOrder POST /api/v1/trade/real/order/submit
+// @Summary 实盘下单
+// @Tags 实盘交易
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /trade/real/order/submit [post]
 func (h *RealTradeHandler) SubmitRealOrder(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -116,6 +135,13 @@ func (h *RealTradeHandler) SubmitRealOrder(c *gin.Context) {
 
 // ConfirmRealOrder POST /api/v1/trade/real/order/confirm
 // 二次确认：pending → confirmed → 提交券商
+// @Summary 实盘二次确认
+// @Tags 实盘交易
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /trade/real/order/confirm [post]
 func (h *RealTradeHandler) ConfirmRealOrder(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -142,6 +168,13 @@ func (h *RealTradeHandler) ConfirmRealOrder(c *gin.Context) {
 }
 
 // CancelRealOrder DELETE /api/v1/trade/real/order/:id
+// @Summary 实盘撤单
+// @Tags 实盘交易
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "订单ID"
+// @Success 200 {object} response.Response
+// @Router /trade/real/order/{id} [delete]
 func (h *RealTradeHandler) CancelRealOrder(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -165,6 +198,12 @@ func (h *RealTradeHandler) CancelRealOrder(c *gin.Context) {
 }
 
 // ListRealOrders GET /api/v1/trade/real/order/list
+// @Summary 实盘订单列表
+// @Tags 实盘交易
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /trade/real/order/list [get]
 func (h *RealTradeHandler) ListRealOrders(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -191,6 +230,13 @@ func (h *RealTradeHandler) ListRealOrders(c *gin.Context) {
 }
 
 // GetRealOrder GET /api/v1/trade/real/order/:id
+// @Summary 实盘订单详情
+// @Tags 实盘交易
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "订单ID"
+// @Success 200 {object} response.Response
+// @Router /trade/real/order/{id} [get]
 func (h *RealTradeHandler) GetRealOrder(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -214,6 +260,12 @@ func (h *RealTradeHandler) GetRealOrder(c *gin.Context) {
 }
 
 // ListRealPositions GET /api/v1/trade/real/position
+// @Summary 实盘持仓列表
+// @Tags 实盘交易
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /trade/real/position [get]
 func (h *RealTradeHandler) ListRealPositions(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -233,6 +285,12 @@ func (h *RealTradeHandler) ListRealPositions(c *gin.Context) {
 }
 
 // ListRealTradeLogs GET /api/v1/trade/real/log
+// @Summary 实盘操作日志
+// @Tags 实盘交易
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /trade/real/log [get]
 func (h *RealTradeHandler) ListRealTradeLogs(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {

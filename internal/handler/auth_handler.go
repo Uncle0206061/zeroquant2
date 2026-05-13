@@ -31,6 +31,13 @@ type LoginReq struct {
 
 // Register 注册接口
 // POST /api/v1/auth/register
+// @Summary 用户注册
+// @Tags 认证
+// @Accept json
+// @Produce json
+// @Param body body RegisterReq true "注册参数"
+// @Success 200 {object} response.Response
+// @Router /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req RegisterReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -56,6 +63,13 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 // Login 登录接口
 // POST /api/v1/auth/login
+// @Summary 用户登录
+// @Tags 认证
+// @Accept json
+// @Produce json
+// @Param body body LoginReq true "登录参数"
+// @Success 200 {object} response.Response
+// @Router /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req LoginReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -85,6 +99,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 // Me 当前用户信息
 // GET /api/v1/auth/me
+// @Summary 获取当前用户信息
+// @Tags 认证
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /auth/me [get]
 func (h *AuthHandler) Me(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 

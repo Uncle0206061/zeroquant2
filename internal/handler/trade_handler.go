@@ -20,6 +20,12 @@ func NewTradeHandler(orderService *service.OrderService) *TradeHandler {
 }
 
 // CreateSimAccount POST /api/v1/account/simulate/create
+// @Summary 创建模拟账户
+// @Tags 模拟交易
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /account/simulate/create [post]
 func (h *TradeHandler) CreateSimAccount(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -41,6 +47,12 @@ func (h *TradeHandler) CreateSimAccount(c *gin.Context) {
 }
 
 // GetAccount GET /api/v1/account
+// @Summary 查询模拟账户
+// @Tags 模拟交易
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /account [get]
 func (h *TradeHandler) GetAccount(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -58,6 +70,14 @@ func (h *TradeHandler) GetAccount(c *gin.Context) {
 }
 
 // SubmitOrder POST /api/v1/order/submit
+// @Summary 提交订单
+// @Tags 模拟交易
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param body body object true "订单参数: stock_code, direction(1买入/2卖出), quantity, price(0市价)"
+// @Success 200 {object} response.Response
+// @Router /order/submit [post]
 func (h *TradeHandler) SubmitOrder(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -117,6 +137,15 @@ func (h *TradeHandler) SubmitOrder(c *gin.Context) {
 }
 
 // ListOrders GET /api/v1/order/list
+// @Summary 订单列表
+// @Tags 模拟交易
+// @Produce json
+// @Security BearerAuth
+// @Param status query string false "订单状态"
+// @Param page query int false "页码"
+// @Param page_size query int false "每页数量"
+// @Success 200 {object} response.Response
+// @Router /order/list [get]
 func (h *TradeHandler) ListOrders(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -143,6 +172,13 @@ func (h *TradeHandler) ListOrders(c *gin.Context) {
 }
 
 // GetOrder GET /api/v1/order/:id
+// @Summary 订单详情
+// @Tags 模拟交易
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "订单ID"
+// @Success 200 {object} response.Response
+// @Router /order/{id} [get]
 func (h *TradeHandler) GetOrder(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -166,6 +202,13 @@ func (h *TradeHandler) GetOrder(c *gin.Context) {
 }
 
 // CancelOrder DELETE /api/v1/order/:id
+// @Summary 撤单
+// @Tags 模拟交易
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "订单ID"
+// @Success 200 {object} response.Response
+// @Router /order/{id} [delete]
 func (h *TradeHandler) CancelOrder(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -189,6 +232,13 @@ func (h *TradeHandler) CancelOrder(c *gin.Context) {
 }
 
 // ListPositions GET /api/v1/position
+// @Summary 持仓列表
+// @Tags 模拟交易
+// @Produce json
+// @Security BearerAuth
+// @Param stock_code query string false "股票代码"
+// @Success 200 {object} response.Response
+// @Router /position [get]
 func (h *TradeHandler) ListPositions(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {
@@ -208,6 +258,13 @@ func (h *TradeHandler) ListPositions(c *gin.Context) {
 }
 
 // GetPosition GET /api/v1/position/:stock_code
+// @Summary 持仓详情
+// @Tags 模拟交易
+// @Produce json
+// @Security BearerAuth
+// @Param stock_code path string true "股票代码"
+// @Success 200 {object} response.Response
+// @Router /position/{stock_code} [get]
 func (h *TradeHandler) GetPosition(c *gin.Context) {
 	userID, ok := c.Get("user_id")
 	if !ok {

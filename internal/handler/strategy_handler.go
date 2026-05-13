@@ -21,6 +21,15 @@ func NewStrategyHandler(svc *service.StrategyService) *StrategyHandler {
 
 // ListStrategy GET /api/v1/strategy/list
 // Query: page=1&page_size=20&status=1
+// @Summary 策略列表
+// @Tags 策略
+// @Produce json
+// @Security BearerAuth
+// @Param page query int false "页码"
+// @Param page_size query int false "每页数量"
+// @Param status query int false "状态"
+// @Success 200 {object} response.Response
+// @Router /strategy/list [get]
 func (h *StrategyHandler) ListStrategy(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "20"))
@@ -41,6 +50,14 @@ func (h *StrategyHandler) ListStrategy(c *gin.Context) {
 }
 
 // CreateStrategy POST /api/v1/strategy/create
+// @Summary 创建策略
+// @Tags 策略
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param body body service.CreateStrategyReq true "策略参数"
+// @Success 200 {object} response.Response
+// @Router /strategy/create [post]
 func (h *StrategyHandler) CreateStrategy(c *gin.Context) {
 	var req service.CreateStrategyReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -55,6 +72,13 @@ func (h *StrategyHandler) CreateStrategy(c *gin.Context) {
 }
 
 // GetStrategy GET /api/v1/strategy/:id
+// @Summary 策略详情
+// @Tags 策略
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "策略ID"
+// @Success 200 {object} response.Response
+// @Router /strategy/{id} [get]
 func (h *StrategyHandler) GetStrategy(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -72,6 +96,15 @@ func (h *StrategyHandler) GetStrategy(c *gin.Context) {
 }
 
 // UpdateStrategy PUT /api/v1/strategy/:id
+// @Summary 更新策略
+// @Tags 策略
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "策略ID"
+// @Param body body service.UpdateStrategyReq true "策略参数"
+// @Success 200 {object} response.Response
+// @Router /strategy/{id} [put]
 func (h *StrategyHandler) UpdateStrategy(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -90,6 +123,13 @@ func (h *StrategyHandler) UpdateStrategy(c *gin.Context) {
 }
 
 // DeleteStrategy DELETE /api/v1/strategy/:id
+// @Summary 删除策略
+// @Tags 策略
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "策略ID"
+// @Success 200 {object} response.Response
+// @Router /strategy/{id} [delete]
 func (h *StrategyHandler) DeleteStrategy(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -103,6 +143,14 @@ func (h *StrategyHandler) DeleteStrategy(c *gin.Context) {
 }
 
 // SubmitStrategy POST /api/v1/strategy/:id/submit
+// @Summary 提交策略执行
+// @Tags 策略
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "策略ID"
+// @Success 200 {object} response.Response
+// @Router /strategy/{id}/submit [post]
 func (h *StrategyHandler) SubmitStrategy(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -125,6 +173,13 @@ func (h *StrategyHandler) SubmitStrategy(c *gin.Context) {
 }
 
 // GetBacktests GET /api/v1/strategy/:id/backtests
+// @Summary 策略回测记录
+// @Tags 策略
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "策略ID"
+// @Success 200 {object} response.Response
+// @Router /strategy/{id}/backtests [get]
 func (h *StrategyHandler) GetBacktests(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {

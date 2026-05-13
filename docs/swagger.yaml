@@ -1,0 +1,647 @@
+basePath: /api/v1
+definitions:
+  github_com_Uncle0206061_zeroquant2_backend_internal_service.CreateStrategyReq:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      rule_items:
+        items:
+          $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_internal_service.RuleItem'
+        type: array
+      rules:
+        additionalProperties: true
+        type: object
+      status:
+        description: 0=草稿 1=启用
+        type: integer
+    required:
+    - name
+    type: object
+  github_com_Uncle0206061_zeroquant2_backend_internal_service.RuleItem:
+    properties:
+      enabled:
+        type: boolean
+      priority:
+        type: integer
+      rule_key:
+        type: string
+      rule_type:
+        type: string
+      rule_value: {}
+    type: object
+  github_com_Uncle0206061_zeroquant2_backend_internal_service.UpdateStrategyReq:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      rule_items:
+        items:
+          $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_internal_service.RuleItem'
+        type: array
+      rules:
+        additionalProperties: true
+        type: object
+      status:
+        type: integer
+    type: object
+  github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response:
+    properties:
+      code:
+        description: 响应码：0=成功，非0=失败
+        type: integer
+      data:
+        description: 响应数据
+      message:
+        description: 响应消息
+        type: string
+    type: object
+  internal_handler.LoginReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  internal_handler.RegisterReq:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      role:
+        type: string
+      username:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - password
+    - username
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: A股全自动交易系统后端API - 用户注册登录、策略管理、模拟交易、实盘交易、WebSocket实时推送
+  title: ZeroQuant 2.0 Backend API
+  version: 1.0.0
+paths:
+  /account:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 查询模拟账户
+      tags:
+      - 模拟交易
+  /account/simulate/create:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建模拟账户
+      tags:
+      - 模拟交易
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 登录参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      summary: 用户登录
+      tags:
+      - 认证
+  /auth/me:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取当前用户信息
+      tags:
+      - 认证
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 注册参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_handler.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      summary: 用户注册
+      tags:
+      - 认证
+  /health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      summary: 健康检查
+      tags:
+      - 系统
+  /order/{id}:
+    delete:
+      parameters:
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 撤单
+      tags:
+      - 模拟交易
+    get:
+      parameters:
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 订单详情
+      tags:
+      - 模拟交易
+  /order/list:
+    get:
+      parameters:
+      - description: 订单状态
+        in: query
+        name: status
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 订单列表
+      tags:
+      - 模拟交易
+  /order/submit:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: '订单参数: stock_code, direction(1买入/2卖出), quantity, price(0市价)'
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 提交订单
+      tags:
+      - 模拟交易
+  /ping:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      summary: 心跳检查
+      tags:
+      - 系统
+  /position:
+    get:
+      parameters:
+      - description: 股票代码
+        in: query
+        name: stock_code
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 持仓列表
+      tags:
+      - 模拟交易
+  /position/{stock_code}:
+    get:
+      parameters:
+      - description: 股票代码
+        in: path
+        name: stock_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 持仓详情
+      tags:
+      - 模拟交易
+  /stats:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      summary: 系统监控指标
+      tags:
+      - 系统
+  /strategy/{id}:
+    delete:
+      parameters:
+      - description: 策略ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除策略
+      tags:
+      - 策略
+    get:
+      parameters:
+      - description: 策略ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 策略详情
+      tags:
+      - 策略
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 策略ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 策略参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_internal_service.UpdateStrategyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新策略
+      tags:
+      - 策略
+  /strategy/{id}/backtests:
+    get:
+      parameters:
+      - description: 策略ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 策略回测记录
+      tags:
+      - 策略
+  /strategy/{id}/submit:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 策略ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 提交策略执行
+      tags:
+      - 策略
+  /strategy/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 策略参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_internal_service.CreateStrategyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建策略
+      tags:
+      - 策略
+  /strategy/list:
+    get:
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      - description: 状态
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 策略列表
+      tags:
+      - 策略
+  /trade/real/account:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 查询实盘账户
+      tags:
+      - 实盘交易
+  /trade/real/account/create:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建实盘账户
+      tags:
+      - 实盘交易
+  /trade/real/log:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 实盘操作日志
+      tags:
+      - 实盘交易
+  /trade/real/order/{id}:
+    delete:
+      parameters:
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 实盘撤单
+      tags:
+      - 实盘交易
+    get:
+      parameters:
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 实盘订单详情
+      tags:
+      - 实盘交易
+  /trade/real/order/confirm:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 实盘二次确认
+      tags:
+      - 实盘交易
+  /trade/real/order/list:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 实盘订单列表
+      tags:
+      - 实盘交易
+  /trade/real/order/submit:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 实盘下单
+      tags:
+      - 实盘交易
+  /trade/real/position:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Uncle0206061_zeroquant2_backend_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: 实盘持仓列表
+      tags:
+      - 实盘交易
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
