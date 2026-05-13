@@ -128,6 +128,31 @@ func GetConfig() *Config {
 	return cfg
 }
 
+// InitForTest 初始化测试配置（避免加载 config.yaml）
+func InitForTest() {
+	cfg = &Config{
+		ServerPort:     "8080",
+		Mode:           "debug",
+		LogLevel:       "error",
+		DBHost:         "localhost",
+		DBPort:         "5432",
+		DBUser:         "postgres",
+		DBPassword:     "postgres",
+		DBName:         "biz",
+		DBSSLMode:      "disable",
+		DBMaxIdleConns: 10,
+		DBMaxOpenConns: 30,
+		DBConnMaxLife:  3600,
+		RedisHost:      "localhost",
+		RedisPort:      "6379",
+		RedisPassword:  "",
+		RedisDB:        0,
+		JWTSecret:      "test-jwt-secret-key-32chars!!",
+		JWTExpire:      24,
+		DataServiceURL: "http://localhost:8081",
+	}
+}
+
 // InitDB 初始化数据库连接（含连接池优化）
 func InitDB(c *Config) error {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",

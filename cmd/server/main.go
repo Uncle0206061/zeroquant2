@@ -86,7 +86,7 @@ func main() {
 
 	// 启动服务（非阻塞）
 	go func() {
-		logger.Info("Server listening on :" + cfg.ServerPort)
+		logger.Info("Server listening on %s", cfg.ServerPort)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Fatal("Server failed: %v", err)
 		}

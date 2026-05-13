@@ -45,6 +45,19 @@ var (
 	isInitialized bool
 )
 
+// ResetForTest 重置日志状态（仅用于测试）
+func ResetForTest() {
+	mu.Lock()
+	isInitialized = false
+	currentLevel = LevelInfo
+	writer = os.Stdout
+	if logFile != nil {
+		logFile.Close()
+		logFile = nil
+	}
+	mu.Unlock()
+}
+
 // Init 初始化日志系统
 // levelStr: debug/info/warn/error
 // logPath: 日志文件路径（空则仅输出到 stdout）
