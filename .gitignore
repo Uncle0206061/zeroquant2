@@ -19,3 +19,12 @@ Thumbs.db
 # Temp files
 *.tmp
 *.bak
+
+# Vim swap files
+*~
+*.swp
+*.swo
+# Build artifacts
+server.exe~
+*.exe~
+
