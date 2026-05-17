@@ -1,0 +1,11 @@
+# 忽略不需要的文件
+*.exe
+*.log
+logs/
+.git/
+.gitignore
+README.md
+*.md
+scripts/
+server.exe
+main_new.exe

@@ -1,0 +1,43 @@
+{
+  "project": {
+    "name": "ZeroQuant2",
+    "description": "A股量化辅助决策平台",
+    "path": "D:/ZeroQuant2"
+  },
+  "permissions": {
+    "allow": [
+      "Bash:gofmt*",
+      "Bash:go vet*",
+      "Bash:python*",
+      "Bash:pip*",
+      "Bash:uv*"
+    ],
+    "deny": [
+      "Bash:rm -rf*",
+      "Bash:git push --force*"
+    ]
+  },
+  "hooks": {
+    "pre-task": [
+      {
+        "type": "task-poller",
+        "interval": "10m",
+        "inbox": "tasks/dataofficer/inbox"
+      }
+    ]
+  },
+  "env": {
+    "NAS_PATH": "\\\\100.65.205.77\\home",
+    "DATA_PATH": "D:\\ZeroQuant2\\data",
+    "POSTGRES_HOST": "localhost",
+    "POSTGRES_PORT": "5432",
+    "REDIS_HOST": "localhost",
+    "REDIS_PORT": "6379"
+  },
+  "paths": {
+    "inbox": "tasks/dataofficer/inbox",
+    "done": "tasks/dataofficer/done",
+    "docs": "docs",
+    "src": "src"
+  }
+}

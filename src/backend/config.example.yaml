@@ -1,0 +1,28 @@
+# ZeroQuant 2.0 Backend 配置示例
+# 复制此文件为 config.yaml 并填写实际值
+
+# 服务配置
+server_port: "8080"
+mode: "debug"
+
+# 日志配置
+log_level: "info"
+log_path: "./logs/app.log"
+
+# 数据库配置（请修改为实际值）
+db_host: "localhost"
+db_port: "5432"
+db_user: "postgres"
+db_password: "your_password_here"
+db_name: "biz"
+db_sslmode: "disable"
+
+# Redis 配置（请修改为实际值）
+redis_host: "localhost"
+redis_port: "6379"
+redis_password: ""
+redis_db: 0
+
+# JWT 配置（请修改为安全值）
+jwt_secret: "change_this_to_a_secure_secret_key"
+jwt_expire: 168  # 7 天 * 24 小时

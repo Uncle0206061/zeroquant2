@@ -1,32 +1,46 @@
-# ZeroQuant2 .gitignore
-
-# Logs
-*.log
-logs/
-
-# Dependency directories
+# Python
 venv/
-node_modules/
-
-# Build output
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
 dist/
 build/
-
-# Environment
+*.egg
 .env
-.env.local
+*.log
+.pytest_cache/
+.venv/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Node / Frontend
+node_modules/
+dist/
+.DS_Store
+*.map
 
 # IDE
-.idea/
 .vscode/
+.idea/
 *.swp
 *.swo
 
 # OS
-.DS_Store
 Thumbs.db
+Desktop.ini
 
-# Temporary files
+# Project temp
+logs/
 *.tmp
 *.bak
-*~

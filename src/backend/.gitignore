@@ -1,0 +1,30 @@
+# Binaries
+*.exe
+server
+main_new
+
+# Logs
+logs/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Temp files
+*.tmp
+*.bak
+
+# Vim swap files
+*~
+*.swp
+*.swo
+# Build artifacts
+server.exe~
+*.exe~
+
